@@ -1,0 +1,29 @@
+{
+  "name": "@life-os/mobile",
+  "version": "0.30.1",
+  "private": true,
+  "main": "expo-router/entry",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "typecheck": "tsc --noEmit",
+    "test:locale": "tsx --test src/i18n/locale.test.ts"
+  },
+  "dependencies": {
+    "@life-os/scoring": "0.1.0",
+    "expo": "^54.0.0",
+    "expo-router": "^6.0.0",
+    "expo-secure-store": "^14.2.4",
+    "expo-file-system": "~19.0.17",
+    "expo-sharing": "~14.0.7",
+    "expo-status-bar": "^3.0.0",
+    "react": "^19.1.0",
+    "react-native": "^0.81.0",
+    "react-native-safe-area-context": "^5.6.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3"
+  }
+}
