@@ -1,17 +1,4 @@
-import React, {createContext, useContext, useEffect, useMemo, useState} from 'react';
-import * as SecureStore from 'expo-secure-store';
-import {LANGUAGES, LanguageCode, messages} from './messages';
-
-type I18nValue = {language: LanguageCode; setLanguage:(language:LanguageCode)=>Promise<void>; t:(key:string)=>string; languages:typeof LANGUAGES};
-const I18nContext=createContext<I18nValue>({language:'en',setLanguage:async()=>{},t:(key)=>messages.en[key]??key,languages:LANGUAGES});
-function deviceLanguage():LanguageCode {
-  try { const locale=Intl.DateTimeFormat().resolvedOptions().locale.toLowerCase(); const code=locale.split(/[-_]/)[0]; return LANGUAGES.some(x=>x.code===code)?code as LanguageCode:'en'; } catch { return 'en'; }
-}
-export function I18nProvider({children}:{children:React.ReactNode}) {
-  const [language,setLanguageState]=useState<LanguageCode>(deviceLanguage());
-  useEffect(()=>{SecureStore.getItemAsync('lifeos.language').then(value=>{if(value&&LANGUAGES.some(x=>x.code===value))setLanguageState(value as LanguageCode)}).catch(()=>{});},[]);
-  const setLanguage=async(next:LanguageCode)=>{setLanguageState(next);try{await SecureStore.setItemAsync('lifeos.language',next)}catch{}};
-  const value=useMemo(()=>({language,setLanguage,t:(key:string)=>messages[language]?.[key]??messages.en[key]??messages.pt[key]??key,languages:LANGUAGES}),[language]);
-  return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;
-}
-export function useI18n(){return useContext(I18nContext)}
+import {isRTL} from '../src/i18n/locale';
+import React,{useEffect,useState} from 'react'; import {Link,router} from 'expo-router'; import {View,Text,StyleSheet,Pressable,ActivityIndicator} from 'react-native'; import {restoreSession} from '../src/lib/session'; import {useI18n} from '../src/i18n'; import {screenText} from '../src/i18n/screens';
+export default function Welcome(){const {t,language}=useI18n(); const [loading,setLoading]=useState(true); useEffect(()=>{restoreSession().then(t=>{if(t) router.replace('/today'); else setLoading(false)})},[]); if(loading)return <View style={s.center}><ActivityIndicator/></View>; return <View style={[s.page,{direction:(isRTL(language)?'rtl':'ltr')}]}><Text style={s.eyebrow}>LIFE OS</Text><Text style={s.title}>{t('welcomeTitle')}</Text><Text style={s.body}>{t('welcomeBody')}</Text><Link href="/auth" asChild><Pressable style={s.button}><Text style={s.buttonText}>{t('enterCreate')}</Text></Pressable></Link><Text style={s.note}>{screenText(language,'welcomePrivacy')}</Text><Pressable onPress={()=>router.push('/language')} style={s.language}><Text style={s.languageText}>◎ {t('language')} · {language.toUpperCase()}</Text></Pressable></View>}
+const s=StyleSheet.create({center:{flex:1,alignItems:'center',justifyContent:'center'},page:{flex:1,padding:28,justifyContent:'center',backgroundColor:'#faf9f6'},eyebrow:{letterSpacing:3,fontWeight:'700',marginBottom:18},title:{fontSize:40,lineHeight:46,fontWeight:'700',maxWidth:360},body:{fontSize:18,lineHeight:27,marginTop:18,opacity:.7,maxWidth:350},button:{marginTop:36,backgroundColor:'#171717',padding:17,borderRadius:16,alignItems:'center'},buttonText:{color:'#fff',fontSize:17,fontWeight:'700'},note:{marginTop:18,fontSize:12,opacity:.5,lineHeight:18},language:{marginTop:24,alignSelf:'flex-start',paddingVertical:8,paddingHorizontal:12,borderRadius:10,borderWidth:1,borderColor:'#e5e2dc'},languageText:{fontSize:13,fontWeight:'600'}});
