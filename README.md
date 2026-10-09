@@ -197,3 +197,37 @@ Limitação: estes testes inspecionam o código-fonte e não substituem testes d
 ### v0.30.1 — recuperação da instalação no CI
 
 A configuração do GitHub Actions já não exige um lockfile antes da instalação, aplica retries explícitos ao registo npm e publica o lockfile gerado como artefacto temporário. A falha DNS `EAI_AGAIN` do ambiente local não pode ser corrigida por alterações ao repositório; é necessário executar o CI remoto para verificar a instalação e os testes reais.
+{
+  "name": "@life-os/api",
+  "version": "0.3.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx src/main.ts",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "test:unit": "tsx --test test/*.test.ts",
+    "test": "npm run test:unit",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test:integration": "tsx --test test/integration/*.test.ts"
+  },
+  "dependencies": {
+    "@life-os/scoring": "0.1.0",
+    "@nestjs/common": "^11.0.0",
+    "@nestjs/core": "^11.0.0",
+    "@prisma/client": "^6.17.1",
+    "bcryptjs": "^3.0.2",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.2",
+    "jsonwebtoken": "^9.0.2",
+    "prisma": "^6.17.1",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.1"
+  },
+  "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.10",
+    "typescript": "^5.7.3",
+    "tsx": "^4.19.2"
+  }
+}
